@@ -1,21 +1,38 @@
-const express = require('express'),
-     http = require('http');
+var express = require('express');
+var app = express();
 
-const hostname = 'localhost';
-const port = 3000;
+app.get('/', function (req, res) {
+   
+    var sql = require("mssql");
 
-const app = express();
+    // config for your database
+    var config = {
+        user: 'targit',
+        password: 'targit2015*',
+        server: '192.168.100.14', 
+        database: 'Inteligencias' 
+    };
 
-app.use((req, res, next) => {
-  console.log(req.headers);
-  res.statusCode = 200;
-  res.setHeader('Content-Type', 'text/html');
-  res.end('<html><body><h1>This is an Express Server</h1></body></html>');
+    // connect to your database
+    sql.connect(config, function (err) {
+    
+        if (err) console.log(err);
 
+        // create Request object
+        var request = new sql.Request();
+           
+        // query to the database and get the records
+        request.query('select 1 as hola', function (err, recordset) {
+            
+            if (err) console.log(err)
+
+            // send records as a response
+            res.send(recordset);
+            
+        });
+    });
 });
 
-const server = http.createServer(app);
-
-server.listen(port, hostname, () => {
-  console.log(`Server running at http://${hostname}:${port}/`);
+var server = app.listen(5000, function () {
+    console.log('Server is running..');
 });
